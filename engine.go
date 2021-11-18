@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
-    "sort"
 )
 
 const EMPTY = " "
@@ -32,7 +32,7 @@ const INFO_SUNK = "sunk"
 
 func main() {
 
-    // TODO: replace with a random generated field
+	// TODO: replace with a random generated field
 	var BOARD_OWN string = strings.Replace(`
 	oooo......
 	..........
@@ -45,18 +45,18 @@ func main() {
 	..........
 	..........
 	`, "\n", "", -1)
-    // TODO: use regex replace to avoid multiple lines
-    BOARD_OWN = strings.Replace(BOARD_OWN, "\r", "", -1)
-    BOARD_OWN = strings.Replace(BOARD_OWN, "\t", "", -1)
-    BOARD_OWN = strings.Replace(BOARD_OWN, " ", "", -1)
-    BOARD_OWN = strings.Replace(BOARD_OWN, MISS, EMPTY, -1)
+	// TODO: use regex replace to avoid multiple lines
+	BOARD_OWN = strings.Replace(BOARD_OWN, "\r", "", -1)
+	BOARD_OWN = strings.Replace(BOARD_OWN, "\t", "", -1)
+	BOARD_OWN = strings.Replace(BOARD_OWN, " ", "", -1)
+	BOARD_OWN = strings.Replace(BOARD_OWN, MISS, EMPTY, -1)
 
 	var BOARD_OTHER string = strings.Repeat(FOG, SIZE)
 
-    // TODO: generate the array based on size
+	// TODO: generate the array based on size
 	var AXIS_X = [10]string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"}
 
-    // TODO: generate the array based on size
+	// TODO: generate the array based on size
 	var AXIS_Y = [10]string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
 
 	reader := bufio.NewReader(os.Stdin)
@@ -73,37 +73,37 @@ func main() {
 		case strings.HasPrefix(command, CMD_QUIT):
 			fmt.Println(command)
 			os.Exit(0)
-        case strings.HasPrefix(command, CMD_STATE):
-            fmt.Println("position ours " + BOARD_OWN)
-            fmt.Println("position theirs " + BOARD_OTHER)
-        case strings.HasPrefix(command, CMD_SHOOT):
-            // TODO: add command validation
-            commandWithOpts := strings.Split(command, " ")
-            x, y := SplitShortAlgebraic(commandWithOpts[1])
+		case strings.HasPrefix(command, CMD_STATE):
+			fmt.Println("position ours " + BOARD_OWN)
+			fmt.Println("position theirs " + BOARD_OTHER)
+		case strings.HasPrefix(command, CMD_SHOOT):
+			// TODO: add command validation
+			commandWithOpts := strings.Split(command, " ")
+			x, y := SplitShortAlgebraic(commandWithOpts[1])
 
-            idx := sort.Search(len(AXIS_X), func(i int) bool {
-                return AXIS_X[i] >= x
-            })
+			idx := sort.Search(len(AXIS_X), func(i int) bool {
+				return AXIS_X[i] >= x
+			})
 
-            idy := sort.Search(len(AXIS_Y), func(i int) bool {
-                return AXIS_Y[i] >= y
-            })
+			idy := sort.Search(len(AXIS_Y), func(i int) bool {
+				return AXIS_Y[i] >= y
+			})
 
-            chars := []rune(BOARD_OWN)
-            index := idx * SIZE_X + idy
-            value := string(chars[index])
-            if (value == SHIP) {
-                // TODO: add detection of sunk ships
-                fmt.Println(INFO_HIT)
-                BOARD_OWN = ReplaceCharAt(BOARD_OWN, index, HIT)
-            } else {
-                fmt.Println(INFO_MISS)
-                BOARD_OWN = ReplaceCharAt(BOARD_OWN, index, MISS)
-                // TODO: add engine turn(s)
-            }
-        // TODO: implement further commands from spec
-        default:
-            fmt.println("Invalid input")
+			chars := []rune(BOARD_OWN)
+			index := idx*SIZE_X + idy
+			value := string(chars[index])
+			if value == SHIP {
+				// TODO: add detection of sunk ships
+				fmt.Println(INFO_HIT)
+				BOARD_OWN = ReplaceCharAt(BOARD_OWN, index, HIT)
+			} else {
+				fmt.Println(INFO_MISS)
+				BOARD_OWN = ReplaceCharAt(BOARD_OWN, index, MISS)
+				// TODO: add engine turn(s)
+			}
+		// TODO: implement further commands from spec
+		default:
+			fmt.Println("Invalid input")
 		}
 	}
 }
@@ -115,7 +115,7 @@ func SplitShortAlgebraic(s string) (string, string) {
 }
 
 func ReplaceCharAt(s string, i int, v string) string {
-    chars := []rune(s)
-    chars[i] = ([]rune(v))[0]
-    return string(chars)
+	chars := []rune(s)
+	chars[i] = ([]rune(v))[0]
+	return string(chars)
 }
