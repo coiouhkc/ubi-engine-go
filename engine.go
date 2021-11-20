@@ -3,10 +3,12 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
 	"os"
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 )
 
 const EMPTY = " "
@@ -59,6 +61,10 @@ func main() {
 	// TODO: generate the array based on size
 	var AXIS_Y = [10]string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
 
+	rand.Seed(time.Now().UnixNano())
+
+	//engineShots := rand.Perm(SIZE)
+
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
@@ -94,12 +100,33 @@ func main() {
 			value := string(chars[index])
 			if value == SHIP {
 				// TODO: add detection of sunk ships
-				fmt.Println(INFO_HIT)
+				fmt.Println("< " + INFO_HIT)
 				BOARD_OWN = ReplaceCharAt(BOARD_OWN, index, HIT)
+				// TODO: add detection of game over
 			} else {
-				fmt.Println(INFO_MISS)
+				fmt.Println("< " + INFO_MISS)
 				BOARD_OWN = ReplaceCharAt(BOARD_OWN, index, MISS)
-				// TODO: add engine turn(s)
+				// TODO: add engine logic instead of random shots
+				engineTurn := true
+				for engineTurn {
+					rand.Seed(time.Now().UnixNano())
+					ind := rand.Intn(SIZE)
+					fmt.Println("< " + CMD_SHOOT + " " + ToShortAlgebraic(AXIS_X[:], AXIS_Y[:], ind))
+					fmt.Print("> ")
+
+					info, _ := reader.ReadString('\n')
+					info = strings.Replace(info, "\n", "", -1)
+
+					switch {
+					case strings.HasPrefix(info, INFO_MISS):
+						engineTurn = false
+					case strings.HasPrefix(info, INFO_HIT), strings.HasPrefix(info, INFO_SUNK):
+						BOARD_OTHER = ReplaceCharAt(BOARD_OTHER, ind, HIT)
+						// TODO: add detection of game over
+					default:
+						fmt.Println("Invalid input")
+					}
+				}
 			}
 		// TODO: implement further commands from spec
 		default:
@@ -112,6 +139,10 @@ func SplitShortAlgebraic(s string) (string, string) {
 	reAlgebraic := regexp.MustCompile(`([a-z]+)(\d+)`)
 	segs := reAlgebraic.FindAllStringSubmatch(s, -1)
 	return segs[0][1], segs[0][2]
+}
+
+func ToShortAlgebraic(axis_x []string, axis_y []string, index int) string {
+	return axis_x[(index/len(axis_x))] + axis_y[(index%len(axis_y))]
 }
 
 func ReplaceCharAt(s string, i int, v string) string {

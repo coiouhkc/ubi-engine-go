@@ -23,3 +23,10 @@ func TestReplaceCharAt(t *testing.T) {
 		t.Fatalf(`ReplaceCharAt failed, was %s`, s)
 	}
 }
+
+func TestToShortAlgebraic(t *testing.T) {
+	s := ToShortAlgebraic([]string{"a", "b"}, []string{"1", "2"}, 2)
+	if s != "b1" {
+		t.Fatalf(`ToShortAlgebraic failed, was %s`, s)
+	}
+}
