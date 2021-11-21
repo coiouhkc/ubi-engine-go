@@ -31,6 +31,7 @@ const INFO_MISS = "miss"
 const INFO_SUNK = "sunk"
 
 // TODO: transform to module containing state, separate command handling (CLI) from game/engine logic
+// TODO: add struct to store game state
 
 func main() {
 
